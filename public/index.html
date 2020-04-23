@@ -56,9 +56,9 @@
             </a>
             -->
             <hr class="mdc-list-divider">
-            <h6 class="mdc-list-group__subheader"><span lang="en">Content version: </span><span lang="fr">Version du contenu: </span> <span id="content-version">0.1</span></h6>
-            <h6 class="mdc-list-group__subheader"><span lang="en">Application version: </span><span lang="fr">Version de l'application: </span> <span id="app-version">0.3</span></h6>
-            <h6 class="mdc-list-group__subheader"><span lang="en">Last updated: </span><span lang="fr">Dernière mise à jour: </span> <span id="last-updated">2020-04-20</span></h6> 
+            <h6 class="mdc-list-group__subheader"><span lang="en">Content version: </span><span lang="fr">Version du contenu: </span> <span id="content-version"></span></h6>
+            <h6 class="mdc-list-group__subheader"><span lang="en">Application version: </span><span lang="fr">Version de l'application: </span> <span id="app-version"></span></h6>
+            <h6 class="mdc-list-group__subheader"><span lang="en">Last updated: </span><span lang="fr">Dernière mise à jour: </span> <span id="content-date"></span></h6> 
           </div>     
         </div>
       </aside>
@@ -111,6 +111,14 @@
       </div>
 
       <script src="/app.js"></script>
+
+      <script>
+        window['isUpdateAvailable'].then(isAvailable => {
+		      if (isAvailable) {
+			     console.log('Update available... do something here.');
+		      }
+	      });
+      </script>
 
     </body>
 
