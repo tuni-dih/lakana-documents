@@ -1,0 +1,122 @@
+body {
+    margin:0;
+    display: flex;
+    height: 100vh;
+    counter-reset : h2;
+}
+
+.mdc-drawer-app-content {
+    flex: auto;
+    overflow: auto;
+    position: relative;
+}
+
+.main-content {
+    overflow: auto;
+    height: 100%;
+}
+
+.app-bar {
+    position: absolute;
+}
+
+.mdc-top-app-bar {
+    z-index: 7;
+}
+
+article {
+    margin:20px;
+    font-weight: 300;
+}
+  
+h2 {
+    counter-reset : h3;
+}
+
+h3 {
+    counter-reset : h4;
+}
+
+h4 {
+    counter-reset : h5;
+
+}
+
+h5 {
+    counter-reset : h6;
+}
+    
+article h2:before {
+    content : counter(h2,decimal) ". ";
+    counter-increment : h2;
+}
+    
+article h3:before {
+    content : counter(h2,decimal) "." counter(h3,decimal) ". ";
+    counter-increment : h3;
+}
+    
+article h4:before {
+    content : counter(h2,decimal) "." counter(h3,decimal) "." counter(h4,decimal) ". ";
+    counter-increment : h4;
+ }
+    
+article h5:before {
+    content : counter(h2,decimal) "." counter(h3,decimal) "." counter(h4,decimal) "." counter(h5,decimal) ". ";
+    counter-increment : h5;
+}
+    
+article h6:before {
+    content : counter(h2,decimal) "." counter(h3,decimal) "." counter(h4,decimal) "." counter(h5,decimal) "." counter(h6,decimal) ". ";
+    counter-increment : h6;
+}
+    
+h2.nocount:before, h3.nocount:before, h4.nocount:before, h5.nocount:before, h6.nocount:before {
+    content : "";
+    counter-increment : none;
+}
+
+article.sop h1 {
+    font-size: 2em;
+    font-weight: 300;
+}
+
+article.sop h2 {
+    font-size: 1.5em;
+    font-weight: 300;
+}
+
+article.sop h3 {
+    font-size: 1.2em;
+    font-weight: 300;
+}
+
+article.sop h4 {
+    font-size: 1.0em;
+    font-weight: 300;
+}
+
+article.sop h5 {
+    font-size: 1.0em;
+    font-weight: 300;
+}
+
+article table {
+    border-collapse: collapse;
+  }
+  
+  article table, th, td {
+    border: 1px solid grey;
+    padding: 8px 8px 8px 8px;
+    font-size: 1em;
+  }
+
+  article th {
+      font-weight: 300;
+      text-align: left;
+      font-style: italic;
+  }
+
+  article p {
+    font-weight: 300;
+  }

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    
+    <head>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>LAKANA Documents</title>
+
+        <script src="/includes/material-components-web/dist/material-components-web.min.js"></script>
+        <link href="/includes/material-components-web/dist/material-components-web.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/includes/material-design-icons/iconfont/material-icons.css">
+        
+        <link rel="stylesheet" href="/styles.css"> 
+        <link rel="shortcut icon" href="/lakana.ico">
+        <link rel="manifest" href="/manifest.json">
+
+        <!-- IOS support -->
+
+        <link rel="apple-touch-icon" href="/images/icons/icon-96x96.png">
+        <meta name="apple-mobile-web-app-status-bar" content="#5A0DE5">
+        <meta name="theme-color" content="#5A0DE5"/>
+        
+    </head>
+
+    <body class="mdc-typography">
+        
+      <aside class="mdc-drawer mdc-drawer--dismissible">
+        <div class="mdc-drawer__header">
+          <h3 class="mdc-drawer__title"><span lang="en">LAKANA Documents</span><span lang="fr">Documents LAKANA</span></h3>
+          <h6 class="mdc-drawer__subtitle"><span lang="en">Document delivery application</span><span lang="fr">Application de livraison de documents</span></h6>
+        </div>
+        <div class="mdc-drawer__content">
+          <div class="mdc-list">
+            <hr class="mdc-list-divider">
+            <h6 class="mdc-list-group__subheader"><span lang="en">Category</span><span lang="fr">Catégorie</span></h6>
+            <placeholder id="menu"></placeholder>
+            <hr class="mdc-list-divider">
+            <h6 class="mdc-list-group__subheader"><span lang="en">Language</span><span lang="fr">Langue</span></h6>
+            <a class="mdc-list-item" href="#" onclick="setLanguage('en');" id="english-link">
+              <i class="material-icons mdc-list-item__graphic" aria-hidden="true">bookmark</i>
+              <span class="mdc-list-item__text"><span lang="en">English</span><span lang="fr">Anglais</span></span>
+            </a>
+            <a class="mdc-list-item" href="#" onclick="setLanguage('fr');" id="french-link">
+              <i class="material-icons mdc-list-item__graphic" aria-hidden="true">bookmark</i>
+              <span class="mdc-list-item__text"><span lang="en">French</span><span lang="fr">Français</span></span>
+            </a>
+            <!--
+            <hr class="mdc-list-divider">
+            <h6 class="mdc-list-group__subheader"><span lang="en">Options</span><span lang="fr">Les options</span></h6>
+            <a class="mdc-list-item" href="#" onclick="reloadDocuments();">
+              <i class="material-icons mdc-list-item__graphic" aria-hidden="true">cached</i>
+              <span class="mdc-list-item__text"><span lang="en">Update content</span><span lang="fr">Mettre à jour le contenu</span></span>
+            </a>
+            -->
+            <hr class="mdc-list-divider">
+            <h6 class="mdc-list-group__subheader"><span lang="en">Content version: </span><span lang="fr">Version du contenu: </span> <span id="content-version">0.1</span></h6>
+            <h6 class="mdc-list-group__subheader"><span lang="en">Application version: </span><span lang="fr">Version de l'application: </span> <span id="app-version">0.3</span></h6>
+            <h6 class="mdc-list-group__subheader"><span lang="en">Last updated: </span><span lang="fr">Dernière mise à jour: </span> <span id="last-updated">2020-04-20</span></h6> 
+          </div>     
+        </div>
+      </aside>
+    
+      <div class="mdc-drawer-app-content">
+        <header class="mdc-top-app-bar app-bar" id="app-bar">
+          <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+              <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+              <span class="mdc-top-app-bar__title"><span lang="en">LAKANA Documents</span><span lang="fr">Documents LAKANA</span></span>
+            </section>
+          </div>
+        </header>
+    
+        <main class="main-content" id="main-content">
+          <div class="mdc-top-app-bar--fixed-adjust">
+            <section id="sopList">
+              <div class="mdc-list-group">
+                <div id="documents"></div>
+              </div>
+            </section>
+            <section id="sop"></section>
+          </div>
+        </main>
+      </div>
+
+      <div class="mdc-dialog">
+        <div class="mdc-dialog__container">
+          <div class="mdc-dialog__surface"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="my-dialog-title"
+            aria-describedby="my-dialog-content">
+            <!-- Title cannot contain leading whitespace due to mdc-typography-baseline-top() -->
+            <h2 class="mdc-dialog__title" id="my-dialog-title"><!--
+           -->Update content<!--
+         --></h2>
+            <div class="mdc-dialog__content" id="my-dialog-content">
+              The latest content has been downloaded. Click OK to continue.
+            </div>
+            <footer class="mdc-dialog__actions">
+              <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="yes">
+                <div class="mdc-button__ripple"></div>
+                <span class="mdc-button__label">OK</span>
+              </button>
+            </footer>
+          </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+      </div>
+
+      <script src="/app.js"></script>
+
+    </body>
+
+</html>
