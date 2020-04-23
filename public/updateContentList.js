@@ -2,7 +2,6 @@ const recursive = require('recursive-readdir');
 const fs = require('fs');
 const fileContent = fs.readFileSync('./service-worker.js', 'utf8').split('\n');
 let fileList = "  '/content.json',\n", outputFileName = './service-worker.js';
-
 fs.readFile('./content.json', (err, data) => {
   if (err) throw err;
   let content = JSON.parse(data);
@@ -35,13 +34,4 @@ fs.readFile('./content.json', (err, data) => {
       );
     });
   });
-  
-
-
 });
-
-
-
-
-
-
