@@ -1,4 +1,6 @@
-const lakanaDocumentsCache = 'lakana-documents-v8';
+const applicationVersion = '1.0'
+
+let lakanaDocumentsCache = 'lakana-documents-' + applicationVersion;
 
 const includes = [
   '/includes/material-components-web/dist/material-components-web.min.js',
@@ -16,12 +18,17 @@ const assets = [
   '/index.html',
   '/app.js',
   '/lakana.ico',
-  '/styles.css',
-  '/content/sop1.html',
-  '/content/process1.html',
+  '/styles.css'
+];
+
+const content = [
+  ///// Automatically generated code /////
   '/content.json',
+  '/content/process1.html',
+  '/content/report1.html',
   '/content/example.png',
-  '/content/report1.html'
+  '/content/sop1.html'
+  ///// End of automatically generated code /////
 ];
 
 self.addEventListener('install', (event) => {
@@ -29,6 +36,7 @@ self.addEventListener('install', (event) => {
     caches.open(lakanaDocumentsCache).then((cache) => {
       cache.addAll(includes);    
       cache.addAll(assets);
+      cache.addAll(content);
     })
   );
 });
@@ -51,3 +59,7 @@ self.addEventListener('fetch', (event) => {
       return cacheResponse || fetch(event.request);
     }))
 });
+
+
+
+
