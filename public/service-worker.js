@@ -24,9 +24,9 @@ const assets = [
 const content = [
   ///// Automatically generated code /////
   '/content.json',
+  '/content/example.png',
   '/content/process1.html',
   '/content/report1.html',
-  '/content/example.png',
   '/content/sop1.html'
   ///// End of automatically generated code /////
 ];
@@ -38,6 +38,8 @@ self.addEventListener('install', (event) => {
       cache.addAll(assets);
       cache.addAll(content);
     })
+  ).then(
+    self.skipWaiting()
   );
 });
 
@@ -59,3 +61,4 @@ self.addEventListener('fetch', (event) => {
       return cacheResponse || fetch(event.request);
     }))
 });
+

@@ -1,40 +1,39 @@
-// if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('/service-worker.js')
-//     .then((registration) => console.log('Service worker registered'))
-//     .catch((error) => console.log('Service worker not registered', error));
-// }
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+    .then((registration) => console.log('Service worker registered'))
+    .catch((error) => console.log('Service worker not registered', error));
+}
 
-// make the whole serviceworker process into a promise so later on we can
-// listen to it and in case new content is available a toast will be shown
-window.isUpdateAvailable = new Promise(function(resolve, reject) {
-	// lazy way of disabling service workers while developing
-	if ('serviceWorker' in navigator && ['localhost', '127'].indexOf(location.hostname) === -1) {
-		// register service worker file
-		navigator.serviceWorker.register('service-worker.js')
-			.then(reg => {
-				reg.onupdatefound = () => {
-					const installingWorker = reg.installing;
-					installingWorker.onstatechange = () => {
-						switch (installingWorker.state) {
-							case 'installed':
-								if (navigator.serviceWorker.controller) {
-                                    // new update available
-                                    console.log('New update available');
-									resolve(true);
-								} else {
-                                    // no update available
-                                    console.log('No update available.');
-									resolve(false);
-								}
-								break;
-						}
-					};
-				};
-			})
-			.catch(err => console.error('[SW ERROR]', err));
-	}
-});
-
+//make the whole serviceworker process into a promise so later on we can
+//listen to it and in case new content is available a toast will be shown
+// window.isUpdateAvailable = new Promise(function(resolve, reject) {
+// 	// lazy way of disabling service workers while developing
+// 	if ('serviceWorker' in navigator && ['localhost', '127'].indexOf(location.hostname) === -1) {
+// 		// register service worker file
+// 		navigator.serviceWorker.register('service-worker.js')
+// 			.then(reg => {
+// 				reg.onupdatefound = () => {
+// 					const installingWorker = reg.installing;
+// 					installingWorker.onstatechange = () => {
+// 						switch (installingWorker.state) {
+// 							case 'installed':
+// 								if (navigator.serviceWorker.controller) {
+//                                     // new update available
+//                                     console.log('New update available');
+// 									resolve(true);
+// 								} else {
+//                                     // no update available
+//                                     console.log('No update available.');
+// 									resolve(false);
+// 								}
+// 								break;
+// 						}
+// 					};
+// 				};
+// 			})
+// 			.catch(err => console.error('[SW ERROR]', err));
+// 	}
+// });
 
 // Custom HTML element for embedding SOP processes in larger documents
 
@@ -167,7 +166,6 @@ function openSop(name, version, versionDate) {
                                 Close document
                             </button></div>`;
     });
- 
 }
 
 function closeSop() {
