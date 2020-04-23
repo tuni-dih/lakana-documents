@@ -59,7 +59,3 @@ self.addEventListener('fetch', (event) => {
       return cacheResponse || fetch(event.request);
     }))
 });
-
-
-
-
