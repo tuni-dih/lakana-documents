@@ -1,4 +1,4 @@
-const lakanaDocumentsCache = 'lakana-documents-v7';
+const lakanaDocumentsCache = 'lakana-documents-v8';
 
 const includes = [
   '/includes/material-components-web/dist/material-components-web.min.js',
