@@ -5,7 +5,7 @@ let fileList = "  '/content.json',\n", outputFileName = './service-worker.js';
 fs.readFile('./content.json', (err, data) => {
   if (err) throw err;
   let content = JSON.parse(data);
-  const appVersion = content['app-version'];
+  const appVersion = content['release-number'];
   fs.writeFile(outputFileName, '', function(err, result) {
     if(err) console.log('error', err);
     recursive('./content/').then((files) => {

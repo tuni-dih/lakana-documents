@@ -27,7 +27,7 @@
 
     <body class="mdc-typography">
         
-      <aside class="mdc-drawer mdc-drawer--dismissible">
+      <aside class="mdc-drawer mdc-drawer--modal">
         <div class="mdc-drawer__header">
           <h3 class="mdc-drawer__title"><span lang="en">LAKANA Documents</span><span lang="fr">Documents LAKANA</span></h3>
           <h6 class="mdc-drawer__subtitle"><span lang="en">Document delivery application</span><span lang="fr">Application de livraison de documents</span></h6>
@@ -48,12 +48,13 @@
               <span class="mdc-list-item__text"><span lang="en">French</span><span lang="fr">Français</span></span>
             </a>
             <hr class="mdc-list-divider">
-            <h6 class="mdc-list-group__subheader"><span lang="en">Content version: </span><span lang="fr">Version du contenu: </span> <span id="content-version"></span></h6>
-            <h6 class="mdc-list-group__subheader"><span lang="en">Application version: </span><span lang="fr">Version de l'application: </span> <span id="app-version"></span></h6>
-            <h6 class="mdc-list-group__subheader"><span lang="en">Last updated: </span><span lang="fr">Dernière mise à jour: </span> <span id="content-date"></span></h6> 
+            <h6 class="mdc-list-group__subheader"><span lang="en">Release number: </span><span lang="fr">Numéro de version: </span> <span id="release-number"></span></h6>
+            <h6 class="mdc-list-group__subheader"><span lang="en">Release date: </span><span lang="fr">Date de sortie: </span> <span id="release-date"></span></h6>
           </div>     
         </div>
       </aside>
+
+      <div class="mdc-drawer-scrim"></div>
     
       <div class="mdc-drawer-app-content">
         <header class="mdc-top-app-bar app-bar" id="app-bar">
@@ -94,3 +95,4 @@
     </body>
 
 </html>
+

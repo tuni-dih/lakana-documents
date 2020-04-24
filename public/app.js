@@ -4,6 +4,11 @@ if ('serviceWorker' in navigator) {
     .catch((error) => console.log('Service worker not registered', error));
 }
 
+const listEl = document.querySelector('.mdc-drawer .mdc-list');
+listEl.addEventListener('click', (event) => {
+    drawer.open = false;
+  });
+
 //make the whole serviceworker process into a promise so later on we can
 //listen to it and in case new content is available a toast will be shown
 // window.isUpdateAvailable = new Promise(function(resolve, reject) {
@@ -105,9 +110,8 @@ function UpdateContent(category) {
           response.json().then(
               function(data) {
                     documents.innerHTML = data.documents.map(createListItem).join('\n');
-                    document.getElementById('app-version').innerHTML = data['app-version'];
-                    document.getElementById('content-version').innerHTML = data['content-version'];
-                    document.getElementById('content-date').innerHTML = data['content-date'];
+                    document.getElementById('release-number').innerHTML = data['release-number'];
+                    document.getElementById('release-date').innerHTML = data['release-date'];
               });
            }).catch(function(err) {
               console.log('Fetch Error :-S', err);
