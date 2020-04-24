@@ -1,4 +1,4 @@
-const applicationVersion = '1'
+const applicationVersion = '2'
 
 let lakanaDocumentsCache = 'lakana-documents-' + applicationVersion;
 
