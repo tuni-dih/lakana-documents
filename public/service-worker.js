@@ -26,11 +26,11 @@ const content = [
   '/content.json',
   '/content/lakana-sop-admin-01-en.html',
   '/content/lakana-sop-admin-02-en.html',
-  '/content/lakana-sop-lab-02-en.html',
-  '/content/lakana-sop-lab-04-en.html',
-  '/content/lakana-sop-lab-03-en.html',
   '/content/lakana-sop-data-01-en.html',
   '/content/lakana-sop-lab-01-en.html',
+  '/content/lakana-sop-lab-02-en.html',
+  '/content/lakana-sop-lab-03-en.html',
+  '/content/lakana-sop-lab-04-en.html',
   '/content/lakana-sop-lab-05-en.html',
   '/content/lakana-sop-pharm-01-en.html',
   '/content/lakana-sop-prep-01-en.html',
@@ -58,8 +58,8 @@ const content = [
   '/content/lakana-sop-visit-09-en.html',
   '/content/lakana-sop-visit-10-en.html',
   '/content/lakana-sop-visit-11-en.html',
-  '/content/lakana-sop-visit-13-en.html',
   '/content/lakana-sop-visit-12-en.html',
+  '/content/lakana-sop-visit-13-en.html',
   '/content/lakana-sop-visit-14-en.html',
   '/content/lakana-sop-visit-15-en.html',
   '/content/lakana-sop-visit-16-en.html'
@@ -96,6 +96,7 @@ self.addEventListener('fetch', (event) => {
       return cacheResponse || fetch(event.request);
     }))
 });
+
 
 
 
