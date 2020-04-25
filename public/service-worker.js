@@ -1,4 +1,4 @@
-const applicationVersion = '3'
+const applicationVersion = '4'
 
 let lakanaDocumentsCache = 'lakana-documents-' + applicationVersion;
 
@@ -96,6 +96,7 @@ self.addEventListener('fetch', (event) => {
       return cacheResponse || fetch(event.request);
     }))
 });
+
 
 
 
