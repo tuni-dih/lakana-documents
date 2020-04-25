@@ -20,9 +20,7 @@ body {
     position: absolute;
 }
 
-.mdc-top-app-bar {
-    z-index: 7;
-}
+
 
 article {
     margin:20px;
