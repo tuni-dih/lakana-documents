@@ -25,12 +25,12 @@ const content = [
   ///// Automatically generated code /////
   '/content.json',
   '/content/lakana-sop-admin-01-en.html',
-  '/content/lakana-sop-data-01-en.html',
   '/content/lakana-sop-admin-02-en.html',
-  '/content/lakana-sop-lab-01-en.html',
   '/content/lakana-sop-lab-02-en.html',
-  '/content/lakana-sop-lab-03-en.html',
   '/content/lakana-sop-lab-04-en.html',
+  '/content/lakana-sop-lab-03-en.html',
+  '/content/lakana-sop-data-01-en.html',
+  '/content/lakana-sop-lab-01-en.html',
   '/content/lakana-sop-lab-05-en.html',
   '/content/lakana-sop-pharm-01-en.html',
   '/content/lakana-sop-prep-01-en.html',
@@ -38,8 +38,8 @@ const content = [
   '/content/lakana-sop-prep-03-en.html',
   '/content/lakana-sop-prep-04-en.html',
   '/content/lakana-sop-proc-01-en.html',
-  '/content/lakana-sop-proc-03-en.html',
   '/content/lakana-sop-proc-02-en.html',
+  '/content/lakana-sop-proc-03-en.html',
   '/content/lakana-sop-proc-04-en.html',
   '/content/lakana-sop-proc-05-en.html',
   '/content/lakana-sop-proc-06-en.html',
@@ -56,11 +56,11 @@ const content = [
   '/content/lakana-sop-visit-07-en.html',
   '/content/lakana-sop-visit-08-en.html',
   '/content/lakana-sop-visit-09-en.html',
-  '/content/lakana-sop-visit-12-en.html',
-  '/content/lakana-sop-visit-13-en.html',
   '/content/lakana-sop-visit-10-en.html',
-  '/content/lakana-sop-visit-14-en.html',
   '/content/lakana-sop-visit-11-en.html',
+  '/content/lakana-sop-visit-13-en.html',
+  '/content/lakana-sop-visit-12-en.html',
+  '/content/lakana-sop-visit-14-en.html',
   '/content/lakana-sop-visit-15-en.html',
   '/content/lakana-sop-visit-16-en.html'
   ///// End of automatically generated code /////
@@ -96,6 +96,7 @@ self.addEventListener('fetch', (event) => {
       return cacheResponse || fetch(event.request);
     }))
 });
+
 
 
 
