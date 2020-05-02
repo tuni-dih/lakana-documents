@@ -1,65 +1,28 @@
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-    .then((registration) => console.log('Service worker registered'))
-    .catch((error) => console.log('Service worker not registered', error));
-}
+import Router from '/Router.js';
+//import EmbeddedDocument from '/EmbeddedDocument.js';
 
-const listEl = document.querySelector('.mdc-drawer .mdc-list');
-listEl.addEventListener('click', (event) => {
-    drawer.open = false;
-  });
+// Initiate service worker
 
-//make the whole serviceworker process into a promise so later on we can
-//listen to it and in case new content is available a toast will be shown
-// window.isUpdateAvailable = new Promise(function(resolve, reject) {
-// 	// lazy way of disabling service workers while developing
-// 	if ('serviceWorker' in navigator && ['localhost', '127'].indexOf(location.hostname) === -1) {
-// 		// register service worker file
-// 		navigator.serviceWorker.register('service-worker.js')
-// 			.then(reg => {
-// 				reg.onupdatefound = () => {
-// 					const installingWorker = reg.installing;
-// 					installingWorker.onstatechange = () => {
-// 						switch (installingWorker.state) {
-// 							case 'installed':
-// 								if (navigator.serviceWorker.controller) {
-//                                     // new update available
-//                                     console.log('New update available');
-// 									resolve(true);
-// 								} else {
-//                                     // no update available
-//                                     console.log('No update available.');
-// 									resolve(false);
-// 								}
-// 								break;
-// 						}
-// 					};
-// 				};
-// 			})
-// 			.catch(err => console.error('[SW ERROR]', err));
-// 	}
-// });
+// Setup routing
 
-// Custom HTML element for embedding SOP processes in larger documents
+const router = new Router({ mode: 'history', root: '/' });
+router.add(/document\/(.*)/, (id) => { loadDocument(`${id}`); })
+    .add(/lang\/(.*)/, (id) => { setLanguage(`${id}`); })
+    .add(/category\/(.*)/, (id) => { setCategory(`${id}`); })
+    .add('', () => { /* Do nothing */ });
 
-class SopProcess extends HTMLElement {
-    constructor() {
-      super();
-    }
-    connectedCallback() {
-      this.src = this.getAttribute('src');
-    }
+// Global variables to track application state
 
-    get src() {
-        return this.getAttribute('src');
-    }
+let selectedLanguage = '';
+let selectedCategory = 'all';
 
-    set src(newValue) {
-        this.setAttribute('src', newValue);
-      }
-}
+// Add event listeners
 
-customElements.define('sop-process', SopProcess);
+document.addEventListener('DOMContentLoaded', () => {
+    updateMenu(selectedCategory);
+    updateDocumentList(selectedCategory);
+    translateContent(selectedLanguage);
+});
 
 // Navigation drawer animation
 
@@ -71,180 +34,7 @@ topAppBar.listen('MDCTopAppBar:nav', () => {
     drawer.open = !drawer.open;
 });
 
-// Global variables to track application state
-
-let currentListItemCategory = '';
-let selectedCategory = '';
-let selectedLanguage = 'en';
-
-UpdateContent('');
-
-function UpdateContent(category) {
-    closeSop();
-
-    selectedCategory = category;
-    currentListItemCategory = '';
-
-    const menu = window.document.getElementById('menu');
-    
-    let active = '';
-    if (selectedCategory === '') active = ' mdc-list-item--activated';
-
-    menu.innerHTML = `
-        <a class="mdc-list-item ${active}" href="#" aria-current="page" onclick="UpdateContent('');">
-        <i class="material-icons mdc-list-item__graphic" aria-hidden="true">collections</i>
-        <span class="mdc-list-item__text"><span lang="en">All documents</span><span lang="fr">Tous les documents</span></span>
-        </a>
-    `;
-
-    let contentVersion = '';
-    let contentDate = '';
-
-    fetch('./content.json').then(
-        function(response) {
-          if (response.status !== 200) {
-            console.log('Looks like there was a problem. Status Code: ' +
-              response.status);
-            return;
-          }
-          response.json().then(
-              function(data) {
-                    documents.innerHTML = data.documents.map(createListItem).join('\n');
-                    document.getElementById('release-number').innerHTML = data['release-number'];
-                    document.getElementById('release-date').innerHTML = data['release-date'];
-              });
-           }).catch(function(err) {
-              console.log('Fetch Error :-S', err);
-        });
-    documents.innerHTML += '</ul>';
-
-    translateContent(selectedLanguage);
-
-}
-
-function openSop(name, version, versionDate) {
-    fetch(`./content/${name}`).then(
-        (response) => response.text()).then(
-            (html) => {
-                const sop = document.getElementById('sop');
-                const sopList = document.getElementById('sopList');
-                sop.innerHTML = `               
-                    <div style="margin-left:20px; margin-top:20px; margin-bottom:0px">
-                    <div class="mdc-chip" role="row" style="align: right;">
-                        <div class="mdc-chip__ripple"></div>
-                        <i class="material-icons mdc-chip__icon mdc-chip__icon--leading">refresh</i>
-                        <span role="gridcell">
-                            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-                                <span class="mdc-chip__text">Version: ${version}</span>
-                            </span>
-                        </span>
-                    </div>
-                    <div class="mdc-chip" role="row" style="align: right;">
-                        <div class="mdc-chip__ripple"></div>
-                        <i class="material-icons mdc-chip__icon mdc-chip__icon--leading">today</i>
-                        <span role="gridcell">
-                            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-                                <span class="mdc-chip__text">Updated: ${versionDate}</span>
-                            </span>            
-                        </span>
-                    </div>
-                 </div>
-                `;
-                sop.innerHTML += html;
-                sopList.hidden = true;
-
-                var embeddedSops = document.querySelectorAll("sop-process");         
-                let items = Array.from(embeddedSops).map(elem => {
-                const incName = elem.src;
-                fetch(`./content/${incName}`).then(
-                    (response) => response.text().then(
-                        (incHtml) => {
-                            elem.innerHTML = incHtml;
-                        }  
-                    )
-                )
-            }
-        )
-        sop.innerHTML += ` <div style="margin-left:20px; margin-bottom:40px;"> <button class="mdc-button mdc-button--raised" onclick="closeSop();">
-                            <span class="mdc-button__ripple"></span>
-                                Close document
-                            </button></div>`;
-    });
-}
-
-function closeSop() {
-    const sop = document.getElementById('sop');
-    const sopList = document.getElementById('sopList');
-    sop.innerHTML = '';
-    sopList.hidden = false;
-}
-
-function createListItem(document) {
- 
-
-    if (document.language !== selectedLanguage) return;
-
-    let listItemMarkup = '';
-    let menuItemMarkup = '';
-    let linkMarkup = `onclick="openSop('${document.url}', '${document.version}', '${document.date}');"`;
-    let currentCategory = escape(document.category);
-
-    if (document.visible === false) {
-        return;
-    }
-
-    if (document.available === false) {
-        linkMarkup = `style="color: grey;"`;
-    }
-
-    if (currentCategory !== currentListItemCategory) {
-     
-        if (currentListItemCategory !== '') {
-            listItemMarkup = 
-            `</ul>`;
-        } 
-
-
-        if (currentCategory === selectedCategory || selectedCategory === '') {
-           
-            listItemMarkup = 
-            `<h3 class="mdc-list-group__subheader">${document.category}</h3>
-            <ul class="mdc-list mdc-list--two-line">`
-        }
-        
-        let activated = '';
-        if (currentCategory === selectedCategory) activated = '  mdc-list-item--activated';
-
-        menuItemMarkup = `
-            <a class="mdc-list-item ${activated}" href="#" aria-current="page" onclick="UpdateContent('${escape(document.category)}');">
-              <i class="material-icons mdc-list-item__graphic" aria-hidden="true">${document.icon}</i>
-              <span class="mdc-list-item__text">${document.category}</span>
-            </a>
-            `;
-   
-        const menu = window.document.getElementById('menu');
-        menu.innerHTML += menuItemMarkup;
-
-        currentListItemCategory = currentCategory;
-    }
-  
-    if (currentCategory === selectedCategory || selectedCategory === '') {
-  
-        listItemMarkup += 
-            `<li class="mdc-list-item" ${linkMarkup}>
-                <span style="margin-right:20px;">
-                    <i class="material-icons mdl-list__item-avatar">${document.icon}</i>
-                </span>
-                <span class="mdc-list-item__text">
-                    <span class="mdc-list-item__primary-text">${document.number}: ${document.title}</span>
-                    <span class="mdc-list-item__secondary-text">${document.author} <em>(Version: ${document.version} - ${document.date})</em></span>
-                </span>
-                <li role="separator" class="mdc-list-divider"></li>
-            </li>`;
-        }
-    
-    return listItemMarkup;
-}
+// UI translation
 
 function translateContent(lang) {
     let content = document.querySelectorAll('span[lang]');
@@ -274,19 +64,109 @@ function translateContent(lang) {
 }
 
 function setLanguage(language) {
-    selectedLanguage = language;
-    selectedCategory = '';
-    UpdateContent('');
+    window.selectedLanguage = language;
+    window.selectedCategory = '';
     translateContent(language);
 }
 
-function reloadDocuments() {
-    caches.delete('lakana-documents-v2').then(() => {
-        const dialog = new mdc.dialog.MDCDialog(document.querySelector('.mdc-dialog'));
-        dialog.open();
-        
-        //window.location.href ='/index.html';
-    }); 
+// Update menu
+
+function updateMenu(selectedCategory) {
+    const menu = window.document.getElementById('menu');
+    menu.innerHTML = createMenuItem({ "en": "All documents", "fr": "Tous les documents"}, 'collections', 'all', selectedCategory === 'all');
+    fetch('/content.json').then((response) => {
+        response.json().then((data) => {
+            data.categories.forEach((item) => {
+                let selected = item.id === selectedCategory ? true : false;
+                menu.innerHTML += createMenuItem(item.category, item.icon, item.id, selected);
+            });
+            document.getElementById('release-number').innerHTML = data['release-number'];
+            document.getElementById('release-date').innerHTML = data['release-date'];
+            translateContent('en');
+        })
+    });
+}
+
+function createMenuItem(menuText, menuIcon, menuId, selected) {
+    let selectedClass = selected === true ? 'mdc-list-item--activated' : '';
+    return `
+    <a class="mdc-list-item ${selectedClass}" href="/category/${menuId}">
+      <i class="material-icons mdc-list-item__graphic">${menuIcon}</i>
+      <span class="mdc-list-item__text">
+        <span lang="en">${menuText.en}</span>
+        <span lang="fr">${menuText.fr}</span>
+      </span>
+    </a>
+    `;
+}
+
+// Update document list
+
+function updateDocumentList(category) {
+    const documents = document.getElementById('documents');
+    documents.innerHTML = '';
+    fetch('/content.json').then((response) => {
+        response.json().then((data) => {
+            data.categories.forEach((item) => {
+                if (item.id === category || selectedCategory === 'all') {                    
+                    documents.innerHTML += `<h3 class="mdc-list-group__subheader">${item.category.en}</h3>`;
+                    item.documents.forEach(
+                        (listItem) => {
+                            documents.innerHTML += createListItem(
+                                listItem.icon, listItem.number, listItem.title,
+                                listItem.author, listItem.version, listItem.date,
+                                listItem.url
+                            );
+                        }
+                    );
+                }
+             });
+        })
+    });
+}
+
+function createListItem(icon, number, title, author, version, date, url) {
+    const id = url.substring(0, url.indexOf('.html'));
+    return ` <li>
+        <a class="mdc-list-item" href="/document/${id}">
+            <span style="margin-right:20px;">
+                <i class="material-icons mdl-list__item-avatar">${icon}</i>
+            </span>
+            <span class="mdc-list-item__text">
+                <span class="mdc-list-item__primary-text">${number}: ${title.en}</span>
+                <span class="mdc-list-item__secondary-text">${author} <em>(Version: ${version} - ${date})</em></span>
+            </span>
+        </a>
+    </li>
+    <li role="separator" class="mdc-list-divider"></li>`;
+}
+
+function setCategory(category) {
+    selectedCategory = category;
+    updateDocumentList(category);
+    updateMenu(selectedCategory);
+}
+
+// Update content
+
+function closeDocument() {
+    const doc = document.getElementById('document');
+    const documentList = document.getElementById('documentList');
+    doc.innerHTML = '';
+    documentList.hidden = false;
+}
+
+
+function loadDocument(page) {
+    console.log(page);
+    // if (page != '') {
+    //     const content = document.getElementById('document');
+    //     content.innerHTML = page;
+    // }
+}
+
+function openDocument(url, version, date) {
+ alert('click');
 }
 
 
