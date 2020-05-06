@@ -1,4 +1,4 @@
-const applicationVersion = '4.1'
+const applicationVersion = '4.4'
 
 let lakanaDocumentsCache = 'lakana-documents-' + applicationVersion;
 
@@ -18,7 +18,9 @@ const assets = [
   '/index.html',
   '/app.js',
   '/lakana.ico',
-  '/styles.css'
+  '/styles.css',
+  '/Router.js',
+  'EmbeddedDocument.js'
 ];
 
 const content = [

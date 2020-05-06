@@ -1,6 +1,6 @@
 {
-    "release-number": "4.1",
-    "release-date": "2020-04-25",
+    "release-number": "4.4",
+    "release-date": "2020-05-03",
     "categories": [
         {
           "id": "1",
@@ -27,8 +27,8 @@
               "icon": "description"
             },
             {
-              "version": 0.1,
-              "date": "2020-04-23",
+              "version": 0.2,
+              "date": "2020-04-25",
               "number": "Admin-02",
               "title": { 
                 "en": "Writing a standard operating procedure",

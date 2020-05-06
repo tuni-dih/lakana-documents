@@ -1,19 +1,28 @@
 import Router from '/Router.js';
-//import EmbeddedDocument from '/EmbeddedDocument.js';
+import EmbeddedDocument from '/EmbeddedDocument.js';
 
 // Initiate service worker
 
+// if ('serviceWorker' in navigator) {
+//     navigator.serviceWorker.register('/service-worker.js')
+//     .then((registration) => console.log('Service worker registered'))
+//     .catch((error) => console.log('Service worker not registered', error));
+// }
+
 // Setup routing
 
-const router = new Router({ mode: 'history', root: '/' });
+const router = new Router({ mode: 'hash', root: '/' });
 router.add(/document\/(.*)/, (id) => { loadDocument(`${id}`); })
     .add(/lang\/(.*)/, (id) => { setLanguage(`${id}`); })
     .add(/category\/(.*)/, (id) => { setCategory(`${id}`); })
-    .add('', () => { /* Do nothing */ });
+    .add('', () => { 
+        document.getElementById('documents').hidden = false;
+        document.getElementById('document').innerHTML = '';
+     });
 
 // Global variables to track application state
 
-let selectedLanguage = '';
+let selectedLanguage = 'en';
 let selectedCategory = 'all';
 
 // Add event listeners
@@ -22,6 +31,20 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMenu(selectedCategory);
     updateDocumentList(selectedCategory);
     translateContent(selectedLanguage);
+
+});
+
+document.getElementById('english-link').addEventListener('click', (event) => {
+    event.preventDefault();
+    translateContent('en');
+    drawer.open = false;
+
+});
+
+document.getElementById('french-link').addEventListener('click', (event) => {
+    event.preventDefault();
+    translateContent('fr');
+    drawer.open = false;
 });
 
 // Navigation drawer animation
@@ -64,9 +87,10 @@ function translateContent(lang) {
 }
 
 function setLanguage(language) {
-    window.selectedLanguage = language;
-    window.selectedCategory = '';
+    selectedLanguage = language;
+    selectedCategory = '';
     translateContent(language);
+    console.log('Language ' + language)
 }
 
 // Update menu
@@ -82,7 +106,13 @@ function updateMenu(selectedCategory) {
             });
             document.getElementById('release-number').innerHTML = data['release-number'];
             document.getElementById('release-date').innerHTML = data['release-date'];
-            translateContent('en');
+            translateContent(selectedLanguage);
+            const links = document.querySelectorAll('.category-link');
+            links.forEach((element) => {
+                element.addEventListener('click', () => {
+                    drawer.open = false;
+                })
+            })
         })
     });
 }
@@ -90,7 +120,7 @@ function updateMenu(selectedCategory) {
 function createMenuItem(menuText, menuIcon, menuId, selected) {
     let selectedClass = selected === true ? 'mdc-list-item--activated' : '';
     return `
-    <a class="mdc-list-item ${selectedClass}" href="/category/${menuId}">
+    <a class="category-link mdc-list-item ${selectedClass}" href="/#/category/${menuId}">
       <i class="material-icons mdc-list-item__graphic">${menuIcon}</i>
       <span class="mdc-list-item__text">
         <span lang="en">${menuText.en}</span>
@@ -128,7 +158,7 @@ function updateDocumentList(category) {
 function createListItem(icon, number, title, author, version, date, url) {
     const id = url.substring(0, url.indexOf('.html'));
     return ` <li>
-        <a class="mdc-list-item" href="/document/${id}">
+        <a class="mdc-list-item" href="/#/document/${id}">
             <span style="margin-right:20px;">
                 <i class="material-icons mdl-list__item-avatar">${icon}</i>
             </span>
@@ -145,28 +175,96 @@ function setCategory(category) {
     selectedCategory = category;
     updateDocumentList(category);
     updateMenu(selectedCategory);
+    closeDocument();
 }
 
 // Update content
 
-function closeDocument() {
-    const doc = document.getElementById('document');
-    const documentList = document.getElementById('documentList');
-    doc.innerHTML = '';
-    documentList.hidden = false;
-}
-
-
 function loadDocument(page) {
-    console.log(page);
-    // if (page != '') {
-    //     const content = document.getElementById('document');
-    //     content.innerHTML = page;
-    // }
-}
+    const fileName = page + '.html';  
 
-function openDocument(url, version, date) {
- alert('click');
-}
+    // TODO: Get document version and date
 
+    let version ='0.1', versionDate = '2020-05-06';
 
+     fetch(`/content/${fileName}`).then(
+        (response) => response.text()).then(
+            (html) => {
+                const doc = document.getElementById('document');
+                const documentList = document.getElementById('documents');
+                doc.innerHTML = `               
+                    <div style="margin-left:20px; margin-top:20px; margin-bottom:0px">
+                    <div class="mdc-chip" role="row" style="align: right;">
+                        <div class="mdc-chip__ripple"></div>
+                        <i class="material-icons mdc-chip__icon mdc-chip__icon--leading">refresh</i>
+                        <span role="gridcell">
+                            <span role="button" tabindex="0" class="mdc-chip__primary-action">
+                                <span class="mdc-chip__text">Version: ${version}</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mdc-chip" role="row" style="align: right;">
+                        <div class="mdc-chip__ripple"></div>
+                        <i class="material-icons mdc-chip__icon mdc-chip__icon--leading">today</i>
+                        <span role="gridcell">
+                            <span role="button" tabindex="0" class="mdc-chip__primary-action">
+                                <span class="mdc-chip__text">Updated: ${versionDate}</span>
+                            </span>            
+                        </span>
+                    </div>
+                 </div>
+                `;
+                doc.innerHTML += html;
+                documentList.hidden = true;
+
+                var embeddedDocuments = document.querySelectorAll("embedded-document");         
+                let items = Array.from(embeddedDocuments).map(elem => {
+                const incName = elem.src;
+                fetch(`./content/${incName}`).then(
+                    (response) => response.text().then(
+                        (incHtml) => {
+                            elem.innerHTML = incHtml;
+                        })
+                    )}
+                );
+        doc.innerHTML += ` <div style="margin-left:20px; margin-bottom:40px;"> <button class="mdc-button mdc-button--raised" id="btn-close">
+                            <span class="mdc-button__ripple"></span>
+                                <span lang="en">Close document</span>
+                                <span lang="fr">Fermer le document</span>
+                            </button></div>`;
+    }).then(
+        () => {
+            const btnClose = document.getElementById('btn-close');
+            btnClose.addEventListener('click', (event) => {
+                closeDocument();
+                window.location.href = '#';
+              
+            });
+            translateContent(selectedLanguage);
+        });
+    }
+
+    async function getDocumentVersionInformation(page) {
+        const fileName = page + '.html';  
+        let version, versionDate;
+        fetch('/content.json').then((response) => {
+            response.json().then((data) => {
+                data.categories.forEach((category) => {
+                 category.documents.forEach((document) => {
+                     if (document.url === fileName) {
+                        version = document.version;
+                        versionDate = document.date;
+                        
+                        return [ version, versionDate ];
+                     }
+                 })
+               })
+            })
+        });
+        
+    }
+
+    function closeDocument() {
+        document.getElementById('documents').hidden = false;
+        document.getElementById('document').innerHTML = '';
+    }
