@@ -1,24 +1,26 @@
 import Router from '/Router.js';
+
 import EmbeddedDocument from '/EmbeddedDocument.js';
 
 // Initiate service worker
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-    .then((registration) => console.log('Service worker registered'))
-    .catch((error) => console.log('Service worker not registered', error));
-}
+// if ('serviceWorker' in navigator) {
+//     navigator.serviceWorker.register('/service-worker.js')
+//     .then((registration) => console.log('Service worker registered'))
+//     .catch((error) => console.log('Service worker not registered', error));
+// }
 
 // Setup routing
 
 const router = new Router({ mode: 'hash', root: '/' });
-router.add(/document\/(.*)/, (id) => { loadDocument(`${id}`); })
-    .add(/lang\/(.*)/, (id) => { setLanguage(`${id}`); })
-    .add(/category\/(.*)/, (id) => { setCategory(`${id}`); })
-    .add('', () => { 
-        document.getElementById('documents').hidden = false;
-        document.getElementById('document').innerHTML = '';
-     });
+
+router.add(/document\/(.*)/, (id) => { loadDocument(`${id}`); });
+router.add(/lang\/(.*)/, (id) => { setLanguage(`${id}`); });
+router.add(/category\/(.*)/, (id) => { setCategory(`${id}`); });
+router.add('', () => { 
+    document.getElementById('documents').hidden = false;
+    document.getElementById('document').innerHTML = '';
+});
 
 // Global variables to track application state
 
