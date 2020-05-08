@@ -3,11 +3,11 @@ import EmbeddedDocument from '/EmbeddedDocument.js';
 
 // Initiate service worker
 
-// if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('/service-worker.js')
-//     .then((registration) => console.log('Service worker registered'))
-//     .catch((error) => console.log('Service worker not registered', error));
-// }
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+    .then((registration) => console.log('Service worker registered'))
+    .catch((error) => console.log('Service worker not registered', error));
+}
 
 // Setup routing
 
@@ -38,13 +38,16 @@ document.getElementById('english-link').addEventListener('click', (event) => {
     event.preventDefault();
     translateContent('en');
     drawer.open = false;
-
+    closeDocument();
+    updateDocumentList(selectedCategory);
 });
 
 document.getElementById('french-link').addEventListener('click', (event) => {
     event.preventDefault();
     translateContent('fr');
     drawer.open = false;
+    closeDocument();
+    updateDocumentList(selectedCategory);
 });
 
 // Navigation drawer animation
@@ -88,9 +91,7 @@ function translateContent(lang) {
 
 function setLanguage(language) {
     selectedLanguage = language;
-    selectedCategory = '';
     translateContent(language);
-    console.log('Language ' + language)
 }
 
 // Update menu
@@ -130,28 +131,37 @@ function createMenuItem(menuText, menuIcon, menuId, selected) {
     `;
 }
 
+// Functions for fetching data
+
+async function fetchJson(url) {
+    let response = await fetch(url);
+    let data = await response.json();
+    return data;
+}
+
+async function fetchText(url) {
+    let response = await fetch(url);
+    let data = await response.text();
+    return data;
+}
+
 // Update document list
 
-function updateDocumentList(category) {
+async function updateDocumentList(category) {
     const documents = document.getElementById('documents');
     documents.innerHTML = '';
-    fetch('/content.json').then((response) => {
-        response.json().then((data) => {
-            data.categories.forEach((item) => {
-                if (item.id === category || selectedCategory === 'all') {                    
-                    documents.innerHTML += `<h3 class="mdc-list-group__subheader">${item.category.en}</h3>`;
-                    item.documents.forEach(
-                        (listItem) => {
-                            documents.innerHTML += createListItem(
-                                listItem.icon, listItem.number, listItem.title,
-                                listItem.author, listItem.version, listItem.date,
-                                listItem.url
-                            );
-                        }
-                    );
-                }
-             });
-        })
+    let documentList = await fetchJson('/content.json');
+    documentList.categories.forEach((item) => {
+        if (item.id === category || selectedCategory === 'all') {
+            documents.innerHTML += `<h3 class="mdc-list-group__subheader">${item.category.en}</h3>`;
+            item.documents.forEach((listItem) => {
+                documents.innerHTML += createListItem(
+                    listItem.icon, listItem.number, listItem.title,
+                    listItem.author, listItem.version, listItem.date,
+                    listItem.url
+                );
+            });
+        }
     });
 }
 
@@ -180,91 +190,84 @@ function setCategory(category) {
 
 // Update content
 
-function loadDocument(page) {
+async function loadDocument(page) {
+
     const fileName = page + '.html';  
+    let version ='', versionDate = '';
 
-    // TODO: Get document version and date
+    // Get document version
 
-    let version ='0.1', versionDate = '2020-05-06';
-
-     fetch(`/content/${fileName}`).then(
-        (response) => response.text()).then(
-            (html) => {
-                const doc = document.getElementById('document');
-                const documentList = document.getElementById('documents');
-                doc.innerHTML = `               
-                    <div style="margin-left:20px; margin-top:20px; margin-bottom:0px">
-                    <div class="mdc-chip" role="row" style="align: right;">
-                        <div class="mdc-chip__ripple"></div>
-                        <i class="material-icons mdc-chip__icon mdc-chip__icon--leading">refresh</i>
-                        <span role="gridcell">
-                            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-                                <span class="mdc-chip__text">Version: ${version}</span>
-                            </span>
-                        </span>
-                    </div>
-                    <div class="mdc-chip" role="row" style="align: right;">
-                        <div class="mdc-chip__ripple"></div>
-                        <i class="material-icons mdc-chip__icon mdc-chip__icon--leading">today</i>
-                        <span role="gridcell">
-                            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-                                <span class="mdc-chip__text">Updated: ${versionDate}</span>
-                            </span>            
-                        </span>
-                    </div>
-                 </div>
-                `;
-                doc.innerHTML += html;
-                documentList.hidden = true;
-
-                var embeddedDocuments = document.querySelectorAll("embedded-document");         
-                let items = Array.from(embeddedDocuments).map(elem => {
-                const incName = elem.src;
-                fetch(`./content/${incName}`).then(
-                    (response) => response.text().then(
-                        (incHtml) => {
-                            elem.innerHTML = incHtml;
-                        })
-                    )}
-                );
-        doc.innerHTML += ` <div style="margin-left:20px; margin-bottom:40px;"> <button class="mdc-button mdc-button--raised" id="btn-close">
-                            <span class="mdc-button__ripple"></span>
-                                <span lang="en">Close document</span>
-                                <span lang="fr">Fermer le document</span>
-                            </button></div>`;
-    }).then(
-        () => {
-            const btnClose = document.getElementById('btn-close');
-            btnClose.addEventListener('click', (event) => {
-                closeDocument();
-                window.location.href = '#';
-              
-            });
-            translateContent(selectedLanguage);
+    let documentListing = await fetchJson('/content.json');
+    documentListing.categories.forEach((category) => {     
+       category.documents.forEach((item) => {
+            if (item.url === fileName) {
+                version = item.version;
+                versionDate = item.date;
+            }
         });
-    }
+    });
+    
+    // Insert html of document
 
-    async function getDocumentVersionInformation(page) {
-        const fileName = page + '.html';  
-        let version, versionDate;
-        fetch('/content.json').then((response) => {
-            response.json().then((data) => {
-                data.categories.forEach((category) => {
-                 category.documents.forEach((document) => {
-                     if (document.url === fileName) {
-                        version = document.version;
-                        versionDate = document.date;
-                        
-                        return [ version, versionDate ];
-                     }
-                 })
-               })
-            })
-        });
-        
-    }
+    const doc = document.getElementById('document');
+    const documentList = document.getElementById('documents');
 
-    function closeDocument() {
-        document.getElementById('documents').hidden = false;
-        document.getElementById('document').innerHTML = '';
-    }
+    let documentContent = await fetchText(`/content/${fileName}`);
+    
+    doc.innerHTML = `               
+        <div style="margin-left:20px; margin-top:20px; margin-bottom:0px">
+        <div class="mdc-chip" role="row" style="align: right;">
+            <div class="mdc-chip__ripple"></div>
+            <i class="material-icons mdc-chip__icon mdc-chip__icon--leading">refresh</i>
+            <span role="gridcell">
+                <span role="button" tabindex="0" class="mdc-chip__primary-action">
+                    <span class="mdc-chip__text">Version: ${version}</span>
+                </span>
+            </span>
+        </div>
+        <div class="mdc-chip" role="row" style="align: right;">
+            <div class="mdc-chip__ripple"></div>
+            <i class="material-icons mdc-chip__icon mdc-chip__icon--leading">today</i>
+            <span role="gridcell">
+                <span role="button" tabindex="0" class="mdc-chip__primary-action">
+                    <span class="mdc-chip__text">Updated: ${versionDate}</span>
+                </span>            
+            </span>
+        </div>
+        </div>
+    `;
+               
+    doc.innerHTML += documentContent;
+    documentList.hidden = true;
+
+    // Insert embedded documents
+
+    var embeddedDocuments = document.querySelectorAll("embedded-document"); 
+    await Promise.all(Array.from(embeddedDocuments).map(async elem => {   
+        let insertHtml =  await fetchText(`${elem.src}`);
+        elem.innerHTML += insertHtml;
+    }));
+
+    // Add close buttom
+
+    doc.innerHTML += ` <div style="margin-left:20px; margin-bottom:40px;"> <button class="mdc-button mdc-button--raised" id="btn-close">
+                        <span class="mdc-button__ripple"></span>
+                            <span lang="en">Close document</span>
+                            <span lang="fr">Fermer le document</span>
+                        </button></div>`;
+   
+    const btnClose = document.getElementById('btn-close');
+    btnClose.addEventListener('click', (event) => {
+        closeDocument();
+        window.location.href = '#'; 
+    });
+
+    // Translate close button
+    
+    translateContent(selectedLanguage);
+}
+
+function closeDocument() {
+    document.getElementById('documents').hidden = false;
+    document.getElementById('document').innerHTML = '';
+}
